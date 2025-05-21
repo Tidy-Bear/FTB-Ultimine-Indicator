@@ -1,0 +1,99 @@
+plugins {
+    id 'xplat-common'
+}
+
+configurations {
+    commonJava {
+        canBeResolved = true
+    }
+    commonResources {
+        canBeResolved = true
+    }
+}
+
+repositories {
+    // cross-platform
+    maven {
+        name 'Curse Maven'
+        url 'https://cursemaven.com'
+        content { includeGroup 'curse.maven' }
+    }
+    maven {
+        name 'Modrinth'
+        url 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
+    }
+    maven {
+        // JEI since January 2023
+        name 'Jared\'s maven'
+        url 'https://maven.blamejared.com/mezz/jei/'
+    }
+    maven {
+        // JEI fallback
+        name 'ModMaven'
+        url 'https://modmaven.k-4u.nl'
+    }
+    maven {
+        // Architectury, Cloth Config, REI
+        name 'Shedaniel\'s maven'
+        url 'https://maven.shedaniel.me/'
+        // url 'https://maven.architectury.dev/'
+        content {
+            includeGroup 'me.shedaniel'
+            includeGroup 'me.shedaniel.cloth'
+            includeGroup 'dev.architectury'
+        }
+    }
+    maven {
+        // ModMenu, EMI
+        url 'https://maven.terraformersmc.com/releases/'
+        content {
+            includeGroup 'com.terraformersmc'
+            includeGroup 'dev.emi'
+        }
+    }
+    maven {
+        // WAILA, WTHIT
+        url 'https://maven2.bai.lol'
+        content {
+            includeGroup 'mcp.mobius.waila'
+            includeGroup 'lol.bai'
+        }
+    }
+    maven {
+        // Curios
+        url 'https://maven.theillusivec4.top/'
+    }
+}
+
+dependencies {
+    compileOnly(project(':common')) {
+        capabilities {
+            requireCapability "$group:$mod_id"
+        }
+    }
+    commonJava project(path: ':common', configuration: 'commonJava')
+    commonResources project(path: ':common', configuration: 'commonResources')
+}
+
+tasks.named('compileJava', JavaCompile) {
+    dependsOn(configurations.commonJava)
+    source(configurations.commonJava)
+}
+
+tasks.withType(ProcessResources).configureEach {
+    dependsOn(configurations.commonResources)
+    from(configurations.commonResources)
+}
+
+tasks.named('javadoc', Javadoc) {
+    dependsOn(configurations.commonJava)
+    source(configurations.commonJava)
+}
+
+tasks.named('sourcesJar', Jar) {
+    dependsOn(configurations.commonJava)
+    from(configurations.commonJava)
+    dependsOn(configurations.commonResources)
+    from(configurations.commonResources)
+}

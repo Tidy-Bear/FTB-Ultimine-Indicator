@@ -1,0 +1,35 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        "${author}"
+    ],
+    "contact": {
+        "homepage": "https://github.com/Tidy-Bear",
+        "sources": "https://github.com/Tidy-Bear/ctidy-demo-xplat"
+    },
+    "license": "${license}",
+    "icon": "${mod_id}.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "me.ctidy.mcmod.demo.fabric.FabricMain"
+        ]
+    },
+    "mixins": [
+        "${mod_id}.mixins.json",
+        "${mod_id}.fabric.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": "${fabric_loader_request}",
+        "fabric-api": "${fabric_request}",
+        "minecraft": "${minecraft_request}",
+        "java": "${java_request}"
+    },
+    "suggests": {
+        "another-mod": "*"
+    }
+}

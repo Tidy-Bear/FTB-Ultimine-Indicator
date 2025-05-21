@@ -1,0 +1,138 @@
+plugins {
+    id 'xplat-loader'
+    id 'fabric-loom'
+}
+
+// ////////////////////////////// Loom config //////////////////////////////
+loom {
+    def aw = project(":common").file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
+
+    mixin {
+        defaultRefmapName.set("${mod_id}.refmap.json")
+    }
+
+    runs {
+        configureEach {
+            // Separate working directory of each runs
+            runDir = "runs/$name"
+            setConfigName "fabric - ${name.capitalize()}"
+
+            ideConfigGenerated true
+
+            // log4j2 bug fix
+            vmArgs  '-Dlog4j2.formatMsgNoLookups=true'
+
+            // mixin
+            vmArgs '-Dmixin.debug.verbose=true'
+            vmArgs '-Dmixin.debug.export=true'
+            vmArgs '-Dmixin.checks=true'
+            vmArgs '-Dmixin.dumpTargetOnFailure=true'
+            vmArgs '-Dmixin.hotSwap=true'
+        }
+        client {
+            client()
+        }
+        server {
+            server()
+        }
+    }
+}
+
+repositories {
+    maven {
+        // Cardinal, required by some mods
+        name 'Ladysnake Libs'
+        url 'https://maven.ladysnake.org/releases'
+        content {
+            includeGroup 'dev.onyxstudios.cardinal-components-api'
+        }
+    }
+}
+
+dependencies {
+    // //////////// MC & Fabric ////////////
+    minecraft "com.mojang:minecraft:$minecraft_version"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-$parchment_minecraft_version:$parchment_mappings_version@zip")
+    }
+
+    modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_version"
+
+    // //////////// enough items ////////////
+    // JEI
+    modCompileOnly "mezz.jei:$jei_artifact_id-common-api:$jei_version"
+    modCompileOnly "mezz.jei:$jei_artifact_id-fabric-api:$jei_version"
+    if (project.runtime_variants_enough_items == 'jei') {
+        modLocalRuntime "mezz.jei:$jei_artifact_id-fabric:$jei_version"
+    }
+
+    // REI
+    // REI's dependency is quite complicated, so let's just be lazy and depend on the full artifact _(:3)/_)_
+    if (project.runtime_variants_enough_items == 'rei') {
+        implementation 'me.shedaniel.cloth:basic-math:0.6.1'
+        modImplementation "dev.architectury:architectury-fabric:$architectury_version"
+        modImplementation "me.shedaniel.cloth:cloth-config-fabric:$cloth_config_version"
+        modImplementation "me.shedaniel:RoughlyEnoughItems-fabric:$rei_version"
+    } else {
+        compileOnly 'me.shedaniel.cloth:basic-math:0.6.1'
+        modCompileOnly "dev.architectury:architectury-fabric:$architectury_version"
+        modCompileOnly "me.shedaniel.cloth:cloth-config-fabric:$cloth_config_version"
+        modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:$rei_version"
+    }
+
+    // EMI
+    modCompileOnly "dev.emi:emi-fabric:$emi_version:api"
+    if (project.runtime_variants_enough_items == 'emi') {
+        modLocalRuntime "dev.emi:emi-fabric:$emi_version"
+    }
+    if (project.runtime_variants_enough_items == 'jei+emi') {
+        modLocalRuntime "mezz.jei:$jei_artifact_id-fabric:$jei_version"
+        modLocalRuntime "dev.emi:emi-fabric:$emi_version"
+    }
+
+    // //////////// looking tooltip (Jade / WTHIT / TOP) ////////////
+    // Jade
+    if (project.runtime_variants_looking_tooltip == 'jade') {
+        modImplementation "curse.maven:jade-324717:$jade_version"
+    } else {
+        modCompileOnly "curse.maven:jade-324717:$jade_version"
+    }
+
+    // WTHIT
+    modCompileOnly "mcp.mobius.waila:wthit-api:fabric-$wthit_version"
+    if (project.runtime_variants_looking_tooltip == 'wthit') {
+        modLocalRuntime "lol.bai:badpackets:fabric-$badpackets_version"
+        modLocalRuntime "mcp.mobius.waila:wthit:fabric-$wthit_version"
+    }
+
+    // //////////// Other API ////////////
+    // leave to implementors
+
+    // //////////// QoL ////////////
+    modLocalRuntime "com.terraformersmc:modmenu:$modmenu_version"
+
+    modLocalRuntime "curse.maven:searchables-858542:$searchables_version"
+    modLocalRuntime "curse.maven:controlling-250398:$controlling_version"
+
+    modLocalRuntime "curse.maven:spark-361579:$spark_version"
+
+    modLocalRuntime "curse.maven:XaeroMinimap-263420:$xaerominimap_version"
+    modLocalRuntime "curse.maven:XaeroWorldmap-317780:$xaeroworldmap_version"
+}
+
+expandProps {
+    filter.add 'fabric.mod.json'
+    props.putAll([
+            'fabric_loader_version': fabric_loader_version,
+            'fabric_version': fabric_version,
+            'java_request': java_request,
+            'minecraft_request': minecraft_request,
+            'fabric_loader_request': fabric_loader_request,
+            'fabric_request': fabric_request,
+    ])
+}

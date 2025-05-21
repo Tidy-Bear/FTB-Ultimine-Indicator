@@ -1,0 +1,156 @@
+plugins {
+    id 'idea'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+version = "$mod_version"
+base {
+    archivesName = "$archives_base_name-${project.name}-${minecraft_version}"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+    withSourcesJar()
+    // withJavadocJar()
+}
+
+repositories {
+    mavenCentral()
+    exclusiveContent {
+        forRepository {
+            maven {
+                name 'Sponge'
+                url 'https://repo.spongepowered.org/repository/maven-public'
+            }
+        }
+        filter { includeGroupAndSubgroups('org.spongepowered') }
+    }
+    exclusiveContent {
+        forRepositories(
+                maven {
+                    name 'ParchmentMC'
+                    url 'https://maven.parchmentmc.org/'
+                },
+                maven {
+                    name 'NeoForge'
+                    url 'https://maven.neoforged.net/releases'
+                }
+        )
+        filter { includeGroup('org.parchmentmc.data') }
+    }
+    maven {
+        name 'BlameJared'
+        url 'https://maven.blamejared.com'
+    }
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:24.1.0'
+}
+
+// Declare capabilities on the outgoing configurations.
+// https://docs.gradle.org/current/userguide/component_capabilities.html#sec:declaring-additional-capabilities-for-a-local-component
+['apiElements', 'runtimeElements', 'sourcesElements', /*'javadocElements'*/].each { variant ->
+    configurations."$variant".outgoing {
+        capability("$group:${project.name}:$version")
+        capability("$group:${base.archivesName.get()}:$version")
+        capability("$group:$mod_id:$version")
+    }
+    publishing.publications.configureEach {
+        suppressPomMetadataWarningsFor(variant)
+    }
+}
+
+def filter = ['pack.mcmeta', '*.mixins.json']
+def props = [
+        'version': version,
+        'group': project.group, //Else we target the task's group.
+        'mod_id': mod_id,
+        'mod_name': mod_name,
+        'description': project.description,
+        'license': license,
+        'credits': credits,
+        'author': author,
+        'resourcepack_format': resourcepack_format,
+        'datapack_format': datapack_format,
+
+        'java_version': java_version,
+        'mixin_version': mixin_version,
+        'minecraft_version': minecraft_version,
+]
+class ExpandPropertiesExtensions {
+    final List<String> filter = []
+    final Map<String, ?> props = [:]
+}
+def extension = project.extensions.create('expandProps', ExpandPropertiesExtensions)
+static void expandPropsToResources(ProcessResources task, Iterable<String> filter, Map<String, ?> props) {
+    task.duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    task.filesMatching(filter) {
+        expand props
+    }
+    task.inputs.properties props
+}
+tasks.withType(ProcessResources).configureEach {
+    expandPropsToResources(it, filter + extension.filter, props + extension.props)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = Integer.parseInt(java_version)
+    options.encoding = 'UTF-8'
+    options.deprecation = false
+}
+
+static void eachLicences(Project project, Closure<?> closure) {
+    project.fileTree(dir: project.rootDir, include: 'LICENSE*')
+            .files.each { closure(it) }
+}
+
+tasks.named('sourcesJar') {
+    eachLicences(rootProject) { File file ->
+        jar.from(file)
+    }
+}
+
+tasks.named('jar', Jar) {
+    eachLicences(rootProject) { File file ->
+        jar.from(file)
+    }
+
+    manifest {
+        attributes([
+                'Specification-Title'   : mod_name,
+                'Specification-Vendor'  : author,
+                'Specification-Version' : '1', // We are version 1 of ourselves
+                'Implementation-Title'  : project.name,
+                'Implementation-Version': project.jar.archiveVersion,
+                'Implementation-Vendor' : author,
+                'Built-On-Minecraft'    : minecraft_version,
+                'Implementation-Timestamp': new Date().format('yyyy-MM-dd\'T\'HH:mm:ssZ'),
+                // 'MixinConfigs': "${mod_id}.forge.mixins.json",
+        ])
+    }
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifactId base.archivesName.get()
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "Local"
+            // url System.getenv("local_maven_url")
+            url = file('build/repo').toURI()
+        }
+    }
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

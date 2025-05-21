@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_${java_version}",
+  "package": "me.ctidy.mcmod.demo.mixin",
+  "refmap": "${mod_id}.refmap.json",
+  "mixins": [
+    "MinecraftServerMixin"
+  ],
+  "client": [],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
