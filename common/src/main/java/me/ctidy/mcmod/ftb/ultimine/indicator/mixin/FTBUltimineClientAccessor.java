@@ -17,44 +17,35 @@
  * along with "FTB Ultimine Indicator".  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.ctidy.mcmod.ftb.ultimine.indicator;
+package me.ctidy.mcmod.ftb.ultimine.indicator.mixin;
 
-import me.ctidy.mcmod.ftb.ultimine.indicator.platform.Services;
-import org.jetbrains.annotations.Unmodifiable;
+import dev.ftb.mods.ftbultimine.client.FTBUltimineClient;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
 /**
- * Dependencies
+ * FTBUltimineClientMixin
  *
  * @author Tidy-Bear
  * @since 2025/5/22
  */
-public enum Dependencies implements IModDependency {
+@Mixin(value = FTBUltimineClient.class, remap = false)
+public interface FTBUltimineClientAccessor {
 
-    FORGE("forge"),
-    FABRIC("fabric");
+    @Accessor
+    boolean isPressed();
 
-    @Unmodifiable
-    public static final Dependencies[] VALUES = values();
+    @Invoker("sneak")
+    boolean isSneak();
 
-    public final String modid;
+    @Accessor("canUltimine")
+    boolean canUltimine();
 
-    private Boolean loaded;
+    @Accessor
+    int getActualBlocks();
 
-    Dependencies(String modid) {
-        this.modid = modid;
-    }
-
-    @Override
-    public String modid() {
-        return modid;
-    }
-
-    @Override
-    public boolean loaded() {
-        if (loaded == null) {
-            loaded = Services.PLATFORM.modLoaded(modid);
-        }
-        return loaded;
-    }
+    @Accessor
+    int getShapeIdx();
 
 }

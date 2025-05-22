@@ -5,7 +5,10 @@
   "package": "me.ctidy.mcmod.ftb.ultimine.indicator.mixin",
   "refmap": "${mod_id}.refmap.json",
   "mixins": [],
-  "client": [],
+  "client": [
+    "FTBUltimineClientAccessor",
+    "FTBUltimineClientMixin"
+  ],
   "server": [],
   "injectors": {
     "defaultRequire": 1

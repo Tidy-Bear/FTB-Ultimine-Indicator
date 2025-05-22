@@ -1,0 +1,9 @@
+{
+  "sources": [
+    {
+      "type": "directory",
+      "source": "ftbultimine_indicator/shape_icon",
+      "prefix": "ftbultimine_indicator/shape_icon/"
+    }
+  ]
+}

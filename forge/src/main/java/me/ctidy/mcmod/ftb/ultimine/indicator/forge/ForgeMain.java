@@ -19,14 +19,18 @@
 
 package me.ctidy.mcmod.ftb.ultimine.indicator.forge;
 
-import me.ctidy.mcmod.ftb.ultimine.indicator.Bootstrap;
 import me.ctidy.mcmod.ftb.ultimine.indicator.Constants;
-import me.ctidy.mcmod.ftb.ultimine.indicator.forge.config.ClientConfig;
+import me.ctidy.mcmod.ftb.ultimine.indicator.client.ClientHandler;
+import me.ctidy.mcmod.ftb.ultimine.indicator.config.FTBUltimineIndicatorClientConfig;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 /**
@@ -41,10 +45,23 @@ public final class ForgeMain {
     @SuppressWarnings("removal")
     public ForgeMain() {
         ModLoadingContext.get().registerDisplayTest(IExtensionPoint.DisplayTest.IGNORE_ALL_VERSION);
+        // FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onReloadListenerRegister);
         if (Dist.CLIENT == FMLEnvironment.dist) {
-            ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
+            FTBUltimineIndicatorClientConfig.init();
+            MinecraftForge.EVENT_BUS.addListener(this::onHudRender);
         }
-        Bootstrap.init();
+    }
+
+    private void onReloadListenerRegister(final RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(ClientHandler::reload);
+    }
+
+    private void onHudRender(final RenderGuiOverlayEvent.Post event) {
+        if (VanillaGuiOverlay.CROSSHAIR.type() != event.getOverlay()) {
+            return;
+        }
+        ClientHandler.renderHud(event.getGuiGraphics(), event.getWindow(), event.getPartialTick());
     }
 
 }

@@ -19,7 +19,6 @@
 
 package me.ctidy.mcmod.ftb.ultimine.indicator.fabric;
 
-import me.ctidy.mcmod.ftb.ultimine.indicator.Bootstrap;
 import net.fabricmc.api.ClientModInitializer;
 
 /**
@@ -31,8 +30,6 @@ import net.fabricmc.api.ClientModInitializer;
 public class FabricClientMain implements ClientModInitializer {
 
     @Override
-    public void onInitializeClient() {
-        Bootstrap.init();
-    }
+    public void onInitializeClient() {}
 
 }
