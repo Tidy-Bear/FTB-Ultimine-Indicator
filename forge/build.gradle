@@ -3,6 +3,25 @@ plugins {
     id 'net.neoforged.moddev.legacyforge'
 }
 
+/*
+ * Copyright (c) 2025, Tidy-Bear.
+ *
+ * This file is part of "FTB Ultimine Indicator".
+ *
+ * "FTB Ultimine Indicator" is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * "FTB Ultimine Indicator" is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with "FTB Ultimine Indicator".  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 // ////////////////////////////// MDG config //////////////////////////////
 mixin {
     add sourceSets.main, "${mod_id}.refmap.json"
@@ -20,7 +39,7 @@ legacyForge {
 
     def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
-        accessTransformers.from(at_common.absolutePath)
+        accessTransformers.from(at.absolutePath)
     }
     // validateAccessTransformers = true
 
@@ -149,7 +168,13 @@ dependencies {
     }
 
     // //////////// Other API ////////////
-    // leave to implementors
+    modApi "dev.architectury:architectury-forge:$architectury_version"
+
+    // modApi ("dev.ftb.mods:ftb-library-forge:$ftb_library_version") { transitive false }
+    modApi ("curse.maven:ftb-library-404465:$ftb_library_version") { transitive false }
+
+    // modApi ("dev.ftb.mods:ftb-ultimine-forge:$ftb_ultimine_version")
+    modApi "curse.maven:ftb-ultimine-386134:$ftb_ultimine_version"
 
     // //////////// QoL ////////////
     modRuntimeOnly "curse.maven:catalogue-459701:$catalogue_version"
@@ -172,6 +197,7 @@ expandProps {
             'minecraft_request': minecraft_request,
             'fml_request': fml_request,
             'forge_request': forge_request,
+            'ftb_ultimine_request': ftb_ultimine_request,
     ])
 }
 

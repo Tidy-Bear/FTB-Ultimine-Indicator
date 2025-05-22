@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2025, Tidy-Bear.
+ *
+ * This file is part of "FTB Ultimine Indicator".
+ *
+ * "FTB Ultimine Indicator" is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * "FTB Ultimine Indicator" is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with "FTB Ultimine Indicator".  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 plugins {
     id 'xplat-common'
     id 'net.neoforged.moddev.legacyforge'
@@ -18,10 +37,28 @@ legacyForge {
     }
 }
 
+repositories {
+    maven {
+        name 'Curse Maven'
+        url 'https://cursemaven.com'
+        content { includeGroup 'curse.maven' }
+    }
+}
+
 dependencies {
     // //////////// Mixin ////////////
     compileOnly "org.spongepowered:mixin:$mixin_version"
     compileOnly "io.github.llamalad7:mixinextras-common:$mixin_extras_version"
+
+    modCompileOnlyApi "dev.architectury:architectury:$architectury_version"
+
+    // do not use forge's parts
+    // modCompileOnlyApi "dev.ftb.mods:ftb-library:$ftb_library_version"
+    modCompileOnly "curse.maven:ftb-library-404465:$ftb_library_version"
+
+    // do not use forge's parts
+    // modApi "dev.ftb.mods:ftb-ultimine:$ftb_ultimine_version"
+    modCompileOnly "curse.maven:ftb-ultimine-386134:$ftb_ultimine_version"
 }
 
 configurations {

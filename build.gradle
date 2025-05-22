@@ -4,3 +4,17 @@ plugins {
     // https://projects.neoforged.net/neoforged/moddevgradle
     id 'net.neoforged.moddev' version '2.0.80' apply false
 }
+
+subprojects {
+    repositories {
+        maven {
+            // Architectury
+            name 'Shedaniel\'s maven'
+            url 'https://maven.shedaniel.me/'
+            // url 'https://maven.architectury.dev/'
+            content {
+                includeGroup 'dev.architectury'
+            }
+        }
+    }
+}

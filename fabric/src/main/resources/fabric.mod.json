@@ -9,14 +9,14 @@
     ],
     "contact": {
         "homepage": "https://github.com/Tidy-Bear",
-        "sources": "https://github.com/Tidy-Bear/ctidy-demo-xplat"
+        "sources": "https://github.com/Tidy-Bear/FTB-Ultimine-Indicator"
     },
     "license": "${license}",
     "icon": "${mod_id}.png",
-    "environment": "*",
+    "environment": "CLIENT",
     "entrypoints": {
-        "main": [
-            "me.ctidy.mcmod.demo.fabric.FabricMain"
+        "client": [
+            "me.ctidy.mcmod.ftb.ultimine.indicator.fabric.FabricClientMain"
         ]
     },
     "mixins": [
@@ -27,9 +27,7 @@
         "fabricloader": "${fabric_loader_request}",
         "fabric-api": "${fabric_request}",
         "minecraft": "${minecraft_request}",
-        "java": "${java_request}"
-    },
-    "suggests": {
-        "another-mod": "*"
+        "java": "${java_request}",
+        "ftbultimine": "${ftb_ultimine_request}"
     }
 }
