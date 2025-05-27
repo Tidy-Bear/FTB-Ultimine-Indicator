@@ -33,11 +33,11 @@ public interface FTBUltimineIndicatorClientConfig {
 
     BooleanValue showMenu = FTBUltimineClientConfig.CONFIG
             .addBoolean("show_plain_text_menu", false)
-            .comment("Whether show the plain text menu?");
+            .comment("Whether show the plain text menu");
 
     BooleanValue isToggle = FTBUltimineClientConfig.CONFIG
             .addBoolean("toggle", false)
-            .comment("Whether to change the trigger mode of the Ultimine key to toggle instead of holding.");
+            .comment("Whether to change the trigger mode of the Ultimine key to toggle instead of holding");
 
     SNBTConfig groupIndicator = FTBUltimineClientConfig.CONFIG.addGroup("indicator")
             .comment("Indicator settings by FTB Ultimine Indicator");
@@ -46,7 +46,7 @@ public interface FTBUltimineIndicatorClientConfig {
     BooleanValue showIndicatorStatus = groupIndicator.addBoolean("show_status", true)
             .comment("Whether to show the current status (64 blocks, on cooldown, etc) below the indicator icon");
     BooleanValue showShapeName = groupIndicator.addBoolean("show_shape_name", true)
-            .comment("Whether to show the shape name at the right of the indicator icon");
+            .comment("Whether to show the shape name at the right of the indicator icon (require be sneaking or require_sneak_for_menu to be false)");
 
     static void init() {}
 

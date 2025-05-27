@@ -1,33 +1,83 @@
-# CTidy's Forge Demo （Forge Mod 开发模板）
+# FTB 连锁破坏指示器 （FTB Ultimine Indicator）
 
-CTidy（熊老师）自己的 X-Plat（跨平台） Mod 开发模板。具体开发时，请将 `mod_id`、`version`、`author`、`license` 等内容修改为实际值。
+<img alt="logo.png" height="256" src="logo.png"/>
 
-## 预置组件
-### 开发环境
-- ParchmentMC 映射
-- SpongePowered Mixin
-- MinecraftForge (通过 net.neoforged.moddev.legacyforge 构建，基于 ModDevGradle 的旧版本支持)
-- Fabric
+为 FTB 连锁破坏添加了更直观的指示器。
 
-### Mod 依赖
-可以按需要自由增删。
-- JEI (Just Enough Items) / REI (Roughly Enough Items) / EMI
-- Jade / WTHIT (What The Hell Is That?) / TOP (The One Probe)
-- Catalogue (仅 forge 端)
-- Configured (仅 forge 端)
-- Mod Menu (仅 fabric 端)
-- Searchables (Controlling 前置)
-- Controlling
-- Spark
-- Xaero's Minimap
-- Xaero's World Map
+## 关于：FTB 连锁破坏（FTB Ultimine）
 
-## 备注
-推荐将 Mod 本身的代码（如 api）、依赖于原版 MC 的代码 以及 依赖于指定平台（如 Forge、Fabric 等）的代码相分离。
+FTB 连锁破坏，由 [FTB 团队](https://github.com/FTBTeam) 制作，提供了同时收获多个方块的有效模式。
 
-当实现某个功能用例时，尽量优先使用原版 MC 的代码，再考虑指定平台的 API，除非原版代码具有过于显著的缺陷，或者你准备好在每个平台上都进行一次实现。
+[官网](https://feed-the-beast.com/)
+| [github](https://github.com/FTBTeam/FTB-Ultimine)
+| [curseforge (forge)](https://www.curseforge.com/minecraft/mc-mods/ftb-ultimine-forge)
+| [curseforge (fabric)](https://www.curseforge.com/minecraft/mc-mods/ftb-ultimine-fabric)
 
-## 开源协议
-模板项目基于 MIT 协议 (LICENSE) 开源。
+## 特性
+### # 连锁指示器
 
-实现者可自由选择 `license-alternatives` 目录中的任意一份协议，或者其他协议，作为实际项目的开源协议。
+**仅客户端**
+
+本 mod 的**核心功能**。
+
+按下 **连锁键** （默认：`~`）后，在十字准星右侧会显示连锁破环的信息，包括当前形状的名称、图标、连锁状态，以替代原有的纯文本菜单。
+
+**会默认隐藏原先的纯文本菜单。**
+
+#### \*\* 资源包修改支持
+
+可以在 `assets/<命名空间>/textures/ftbultimine_indicator/shape_icon` 路径下自定义形状图标，文件名为每个形状的内部代码 id，具体如下：
+
+| 形状            | id            |
+|---------------|---------------|
+| 不定形           | shapeless     |
+| 小隧道           | small_tunnel  |
+| 小方形 (3x3)     | small_square  |
+| 大隧道 (3x3)     | large_tunnel  |
+| 挖矿隧道          | mining_tunnel |
+| 逃生隧道          | escape_tunnel |
+| 层级（某整合包自增的形状） | layer         |
+
+### # 自定义配置
+
+为既有配置文件 `ftbultimine-client.snbt` 新加了几项配置，详细内容见下。
+
+该配置文件位于 `local` 文件夹底下（**不在寻常的 `config` 里**），启动一次游戏后自动生成（也可以提前手动创建），修改后**重进存档或者服务器即可生效**，无需重启整个游戏进程。
+
+```
+{
+	# 连锁破坏原生配置项，设为 false 后，不必按下潜行键（默认：Shift）也能用鼠标滚轮切换破坏形状。
+	# 默认值：true
+	# 配合本 mod，改为 false 使用体验更佳
+	require_sneak_for_menu: true
+	
+	# 是否显示原先的纯文本菜单
+	# 默认值：false
+	show_plain_text_menu: false
+	
+	# 是否将连锁键的触发模式改为切换式，替代原先的按住（参照原版高版本对疾跑/潜行的可选修改）
+	# 默认值：false
+	# 作者本人更喜欢改为 true _(:з)∠)_
+	toggle: false
+	
+	# 指示器设置
+	indicator: {
+		# 是否在十字准星右侧启用指示器
+		# 默认值：true
+		enable: true
+		
+		# 是否在图标右侧显示形状名称（需要按住潜行键（默认：Shift），或者 require_sneak_for_menu 改为 false）
+		# 默认值：true
+		show_shape_name: true
+		
+		# 是否在图标下侧显示当前状态 （如，破坏64方块，冷却中，等字样）
+		# 默认值：true
+		show_status: true
+	}
+}
+```
+
+## 未来计划
+
+- 可配置的 X、Y 锚点与相对偏移
+- ↑ 同时应用在原先的纯文本菜单上，另外还能调整菜单的展开方向（向上/向下，方便将菜单放在屏幕靠下位置）
