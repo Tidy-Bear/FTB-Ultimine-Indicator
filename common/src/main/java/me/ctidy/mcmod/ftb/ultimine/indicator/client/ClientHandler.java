@@ -55,9 +55,15 @@ import java.util.concurrent.Executor;
  */
 public class ClientHandler {
 
+    public static final String SHAPE_ICON_ID = "shape_icon";
+
+    public static final String SHAPE_ICON_PATH = Constants.MOD_ID + "/" + SHAPE_ICON_ID + "/";
+
+    public static final String SHAPE_ICON_MISSING_ID = "missing";
+
     private static Map<String, TextureAtlasSprite> SHAPE_ICONS = Collections.emptyMap();
 
-    private static final ResourceLocation MISSING_ICON_ID = Constants.id("ftbultimine_indicator/shape_icon/missing");
+    private static final ResourceLocation MISSING_ICON_ID = Constants.id(SHAPE_ICON_PATH + SHAPE_ICON_MISSING_ID);
 
     private static TextureAtlasSprite missing;
 
@@ -78,12 +84,12 @@ public class ClientHandler {
         final var atlas = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
 
         final ImmutableMap.Builder<String, TextureAtlasSprite> builder = ImmutableMap.builder();
-        builder.put("missing", missing = atlas.getSprite(MISSING_ICON_ID));
+        builder.put(SHAPE_ICON_MISSING_ID, missing = atlas.getSprite(MISSING_ICON_ID));
 
         final int count = ShapeRegistry.shapeCount();
         for (int i = 0; i < count; i++) {
             final String name = ShapeRegistry.getShape(i).getName();
-            TextureAtlasSprite sprite = atlas.getSprite(Constants.id(name).withPrefix("ftbultimine_indicator/shape_icon/"));
+            TextureAtlasSprite sprite = atlas.getSprite(Constants.id(name).withPrefix(SHAPE_ICON_PATH));
 
             //noinspection resource
             if (MissingTextureAtlasSprite.getLocation().equals(sprite.contents().name())) {

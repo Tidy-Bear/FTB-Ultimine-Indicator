@@ -4,25 +4,20 @@
     "version": "${version}",
     "name": "${mod_name}",
     "description": "${description}",
-    "authors": [
-        "${author}"
-    ],
+    "authors": ["${author}"],
     "contact": {
         "homepage": "https://github.com/Tidy-Bear",
         "sources": "https://github.com/Tidy-Bear/FTB-Ultimine-Indicator"
     },
     "license": "${license}",
     "icon": "${mod_id}.png",
-    "environment": "CLIENT",
+    "environment": "client",
     "entrypoints": {
         "client": [
             "me.ctidy.mcmod.ftb.ultimine.indicator.fabric.FabricClientMain"
         ]
     },
-    "mixins": [
-        "${mod_id}.mixins.json",
-        "${mod_id}.fabric.mixins.json"
-    ],
+    "mixins": ["${mod_id}.mixins.json"],
     "depends": {
         "fabricloader": "${fabric_loader_request}",
         "fabric-api": "${fabric_request}",

@@ -162,3 +162,7 @@ expandProps {
             'ftb_ultimine_request': ftb_ultimine_request,
     ])
 }
+
+tasks.withType(ProcessResources).configureEach {
+    exclude "${mod_id}.fabric.mixins.json"
+}
