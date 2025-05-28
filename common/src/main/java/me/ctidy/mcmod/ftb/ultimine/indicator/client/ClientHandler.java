@@ -29,6 +29,7 @@ import me.ctidy.mcmod.ftb.ultimine.indicator.Constants;
 import me.ctidy.mcmod.ftb.ultimine.indicator.config.FTBUltimineIndicatorClientConfig;
 import me.ctidy.mcmod.ftb.ultimine.indicator.mixin.FTBUltimineClientAccessor;
 import me.ctidy.mcmod.ftb.ultimine.indicator.util.Positioning;
+import me.ctidy.mcmod.ftb.ultimine.indicator.util.ShapeNameActiveMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -104,13 +105,13 @@ public class ClientHandler {
 
     public static void renderHud(final GuiGraphics guiGraphics, final Window window, final float partialTicks) {
         if (!FTBUltimineIndicatorClientConfig.SHOW_INDICATOR.get()
-                || !(FTBUltimine.instance.proxy instanceof FTBUltimineClientAccessor client)
-                || !client.isPressed()) {
+                || !(FTBUltimine.instance.proxy instanceof FTBUltimineClientAccessor ultimineClient)
+                || !ultimineClient.isPressed()) {
             return;
         }
 
         final Minecraft mc = Minecraft.getInstance();
-        final String shapeName = ShapeRegistry.getShape(client.getShapeIdx()).getName();
+        final String shapeName = ShapeRegistry.getShape(ultimineClient.getShapeIdx()).getName();
 
         // put the icon and text on the right of the crosshair, and adjust them to the center
         // final int centerX = window.getGuiScaledWidth()  / 2 + 30;  // left =  22 when width  = 8
@@ -139,7 +140,9 @@ public class ClientHandler {
             RenderSystem.setShaderColor(1, 1, 1, 1);
         }
 
-        if (FTBUltimineIndicatorClientConfig.showShapeName.get() && client.isSneak()) {
+        final ShapeNameActiveMode mode = FTBUltimineIndicatorClientConfig.showShapeName.get();
+        if (ShapeNameActiveMode.ALWAYS == mode
+                || (ShapeNameActiveMode.ON_SCROLLABLE == mode && ultimineClient.isSneak())) {
             final Component textShapeName = Component.translatable("ftbultimine.shape." + shapeName);
             // final int x = centerX + 15;  // 45 - mc.font.width(textStatus) * 0.0 / 2
             // final int y = centerY + 2 - mc.font.lineHeight / 2;  // -1 - mc.font.lineHeight * 1.0 / 2
@@ -156,8 +159,8 @@ public class ClientHandler {
             final Component textStatus;
             if (CooldownTracker.isOnCooldown(mc.player)) {
                 textStatus = Component.translatable("ftbultimine.info.cooldown").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xBFBF8C)));
-            } else if (client.canUltimine() && client.getActualBlocks() > 0) {
-                textStatus = Component.translatable("ftbultimine.info.blocks", client.getActualBlocks()).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xA3BE8C)));
+            } else if (ultimineClient.canUltimine() && ultimineClient.getActualBlocks() > 0) {
+                textStatus = Component.translatable("ftbultimine.info.blocks", ultimineClient.getActualBlocks()).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xA3BE8C)));
             } else {
                 textStatus = Component.translatable("ftbultimine.info.not_active").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xBF616A)));
             }

@@ -26,6 +26,7 @@ import dev.ftb.mods.ftblibrary.snbt.config.IntValue;
 import dev.ftb.mods.ftblibrary.snbt.config.SNBTConfig;
 import dev.ftb.mods.ftbultimine.config.FTBUltimineClientConfig;
 import me.ctidy.mcmod.ftb.ultimine.indicator.util.Positioning;
+import me.ctidy.mcmod.ftb.ultimine.indicator.util.ShapeNameActiveMode;
 
 /**
  * FTBUltimineIndicatorClientConfig
@@ -92,11 +93,14 @@ public interface FTBUltimineIndicatorClientConfig {
     SNBTConfig GROUP_SHAPE_NAME = GROUP_INDICATOR
             .addGroup("shape_name")
             .withDisplayOrder(2)
-            .comment("Settings of the shape name located at the right of the shape icon by default, requiring sneaking or 'require_sneak_for_menu' to false");
-    // todo change to Enum: never, always, on_scrollable
-    BooleanValue showShapeName = GROUP_SHAPE_NAME
-            .addBoolean("enable", true)
-            .comment("Whether to display the shape name");
+            .comment("Settings of the shape name located at the right of the shape icon by default");
+    EnumValue<ShapeNameActiveMode> showShapeName = GROUP_SHAPE_NAME
+            .addEnum("enable", ShapeNameActiveMode.NAME_MAP)
+            .comment("When to display the shape name",
+                    "on_scrollable - the default mode where the shape name is displayed when player is sneaking or 'require_sneak_for_menu' is false",
+                    "always - always display",
+                    "never - never display"
+            );
     EnumValue<Positioning> SHAPE_NAME_POSITION = GROUP_SHAPE_NAME
             .addEnum("pos", Positioning.NAME_MAP, Positioning.CENTER)
             .withDisplayOrder(1)
