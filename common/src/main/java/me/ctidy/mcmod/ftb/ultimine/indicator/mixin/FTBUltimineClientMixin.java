@@ -42,7 +42,7 @@ public class FTBUltimineClientMixin {
 
     @Inject(method = "renderGameOverlay", at = @At("HEAD"), cancellable = true)
     private void cancelRenderOverlay(GuiGraphics graphics, float tickDelta, CallbackInfo ci) {
-        if (FTBUltimineIndicatorClientConfig.showMenu.get()) {
+        if (FTBUltimineIndicatorClientConfig.SHOW_OVERLAY.get()) {
             return;
         }
         ci.cancel();
@@ -50,7 +50,7 @@ public class FTBUltimineClientMixin {
 
     @Redirect(method = "<init>", at = @At(value = "NEW", target = "net/minecraft/client/KeyMapping", remap = true))
     private KeyMapping changeToToggleKeyMapping(String name, InputConstants.Type type, int keyCode, String category) {
-        return new ToggleKeyMapping(name, keyCode, category, FTBUltimineIndicatorClientConfig.isToggle::get);
+        return new ToggleKeyMapping(name, keyCode, category, FTBUltimineIndicatorClientConfig.IS_TOGGLE::get);
     }
 
 }

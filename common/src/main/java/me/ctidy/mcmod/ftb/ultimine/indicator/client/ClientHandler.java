@@ -28,6 +28,7 @@ import dev.ftb.mods.ftbultimine.shape.ShapeRegistry;
 import me.ctidy.mcmod.ftb.ultimine.indicator.Constants;
 import me.ctidy.mcmod.ftb.ultimine.indicator.config.FTBUltimineIndicatorClientConfig;
 import me.ctidy.mcmod.ftb.ultimine.indicator.mixin.FTBUltimineClientAccessor;
+import me.ctidy.mcmod.ftb.ultimine.indicator.util.Positioning;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -102,7 +103,7 @@ public class ClientHandler {
     }
 
     public static void renderHud(final GuiGraphics guiGraphics, final Window window, final float partialTicks) {
-        if (!FTBUltimineIndicatorClientConfig.enableIndicator.get()
+        if (!FTBUltimineIndicatorClientConfig.SHOW_INDICATOR.get()
                 || !(FTBUltimine.instance.proxy instanceof FTBUltimineClientAccessor client)
                 || !client.isPressed()) {
             return;
@@ -112,36 +113,64 @@ public class ClientHandler {
         final String shapeName = ShapeRegistry.getShape(client.getShapeIdx()).getName();
 
         // put the icon and text on the right of the crosshair, and adjust them to the center
-        final int centerX = window.getGuiScaledWidth()  / 2 + 30;  // left =  22
-        final int centerY = window.getGuiScaledHeight() / 2 -  3;  // top  = -11
+        // final int centerX = window.getGuiScaledWidth()  / 2 + 30;  // left =  22 when width  = 8
+        // final int centerY = window.getGuiScaledHeight() / 2 -  3;  // top  = -11 when height = 8
 
-        if (FTBUltimineIndicatorClientConfig.showIndicatorStatus.get()) {
-            final Component textStatus;
-            if (CooldownTracker.isOnCooldown(mc.player)) {
-                textStatus = Component.translatable("ftbultimine.info.cooldown").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(12566412)));
-            } else if (client.canUltimine() && client.getActualBlocks() > 0) {
-                textStatus = Component.translatable("ftbultimine.info.blocks", client.getActualBlocks()).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(10731148)));
-            } else {
-                textStatus = Component.translatable("ftbultimine.info.not_active").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(12542314)));
-            }
-            guiGraphics.drawString(mc.font, textStatus, centerX - mc.font.width(textStatus) / 2, centerY + 12, 15527924, true);
+        if (FTBUltimineIndicatorClientConfig.SHOW_SHAPE_ICON.get()) {
+            final TextureAtlasSprite sprite = SHAPE_ICONS.getOrDefault(shapeName, missing);
+            //noinspection resource
+            final int width = sprite.contents().width();
+            //noinspection resource
+            final int height = sprite.contents().height();
+
+            // final int x = centerX - width / 2;  // 30  - width * 1.0 / 2
+            // final int y = centerY - height / 2;  // -3  - height * 1.0 / 2
+            final Positioning.ActualPosition pos = FTBUltimineIndicatorClientConfig.SHAPE_ICON_POSITION.get().getPanelPos(
+                    window.getGuiScaledWidth(), window.getGuiScaledHeight(),
+                    width, height,
+                    FTBUltimineIndicatorClientConfig.SHAPE_ICON_INSET_X.get(), FTBUltimineIndicatorClientConfig.SHAPE_ICON_INSET_Y.get(),
+                    FTBUltimineIndicatorClientConfig.SHAPE_ICON_ANCHOR_X.get(), FTBUltimineIndicatorClientConfig.SHAPE_ICON_ANCHOR_Y.get()
+            );
+
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.setShaderColor(1, 1, 1, 0.5F);
+            guiGraphics.blit(pos.x(), pos.y(), 0, width, height, sprite);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
         }
 
         if (FTBUltimineIndicatorClientConfig.showShapeName.get() && client.isSneak()) {
             final Component textShapeName = Component.translatable("ftbultimine.shape." + shapeName);
-            guiGraphics.drawString(mc.font, textShapeName, centerX + 15, centerY + 2 - mc.font.lineHeight / 2, 15527924, true);
+            // final int x = centerX + 15;  // 45 - mc.font.width(textStatus) * 0.0 / 2
+            // final int y = centerY + 2 - mc.font.lineHeight / 2;  // -1 - mc.font.lineHeight * 1.0 / 2
+            final Positioning.ActualPosition pos = FTBUltimineIndicatorClientConfig.SHAPE_NAME_POSITION.get().getPanelPos(
+                    window.getGuiScaledWidth(), window.getGuiScaledHeight(),
+                    mc.font.width(textShapeName), mc.font.lineHeight,
+                    FTBUltimineIndicatorClientConfig.SHAPE_NAME_INSET_X.get(), FTBUltimineIndicatorClientConfig.SHAPE_NAME_INSET_Y.get(),
+                    FTBUltimineIndicatorClientConfig.SHAPE_NAME_ANCHOR_X.get(), FTBUltimineIndicatorClientConfig.SHAPE_NAME_ANCHOR_Y.get()
+            );
+            guiGraphics.drawString(mc.font, textShapeName, pos.x(), pos.y(), 0xECEFF4, true);
         }
 
-        final TextureAtlasSprite sprite = SHAPE_ICONS.getOrDefault(shapeName, missing);
-        //noinspection resource
-        final int width = sprite.contents().width();
-        //noinspection resource
-        final int height = sprite.contents().height();
-
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(1, 1, 1, 0.5F);
-        guiGraphics.blit(centerX - width / 2, centerY - height / 2, 0, width, height, sprite);
+        if (FTBUltimineIndicatorClientConfig.SHOW_ULTIMINE_STATUS.get()) {
+            final Component textStatus;
+            if (CooldownTracker.isOnCooldown(mc.player)) {
+                textStatus = Component.translatable("ftbultimine.info.cooldown").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xBFBF8C)));
+            } else if (client.canUltimine() && client.getActualBlocks() > 0) {
+                textStatus = Component.translatable("ftbultimine.info.blocks", client.getActualBlocks()).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xA3BE8C)));
+            } else {
+                textStatus = Component.translatable("ftbultimine.info.not_active").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xBF616A)));
+            }
+            // final int x = centerX - mc.font.width(textStatus) / 2;  // 30 - mc.font.width(textStatus) * 1.0 / 2
+            // final int y = centerY + 12;  // 9 - mc.font.lineHeight * 0.0 / 2
+            final Positioning.ActualPosition pos = FTBUltimineIndicatorClientConfig.ULTIMINE_STATUS_POSITION.get().getPanelPos(
+                    window.getGuiScaledWidth(), window.getGuiScaledHeight(),
+                    mc.font.width(textStatus), mc.font.lineHeight,
+                    FTBUltimineIndicatorClientConfig.ULTIMINE_STATUS_INSET_X.get(), FTBUltimineIndicatorClientConfig.ULTIMINE_STATUS_INSET_Y.get(),
+                    FTBUltimineIndicatorClientConfig.ULTIMINE_STATUS_ANCHOR_X.get(), FTBUltimineIndicatorClientConfig.ULTIMINE_STATUS_ANCHOR_Y.get()
+            );
+            guiGraphics.drawString(mc.font, textStatus, pos.x(), pos.y(), 0xECEFF4, true);
+        }
     }
 
 }
