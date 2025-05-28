@@ -68,7 +68,7 @@ public class ClientHandler {
 
     private static TextureAtlasSprite missing;
 
-    public static CompletableFuture<Void> reload(
+    public static CompletableFuture<Void> reloadResources(
             PreparableReloadListener.PreparationBarrier barrier,
             ResourceManager resourceManager,
             ProfilerFiller preparationProfiler,
@@ -78,10 +78,10 @@ public class ClientHandler {
     ) {
         return CompletableFuture.completedFuture(Unit.INSTANCE)
                 .thenCompose(barrier::wait)
-                .thenRunAsync(ClientHandler::reload, gameExecutor);
+                .thenRunAsync(ClientHandler::bindIconSprites, gameExecutor);
     }
 
-    public static void reload() {
+    public static void bindIconSprites() {
         final var atlas = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
 
         final ImmutableMap.Builder<String, TextureAtlasSprite> builder = ImmutableMap.builder();

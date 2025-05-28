@@ -54,7 +54,7 @@ public final class ForgeMain {
     }
 
     private void onReloadListenerRegister(final RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener(ClientHandler::reload);
+        event.registerReloadListener(ClientHandler::reloadResources);
     }
 
     private void onHudRender(final RenderGuiOverlayEvent.Post event) {
